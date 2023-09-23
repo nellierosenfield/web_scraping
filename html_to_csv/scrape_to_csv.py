@@ -46,4 +46,4 @@ for page_number in range(1, 6):
 df = pd.DataFrame(books, columns=['Title', 'Price', 'Rating'])
 
 # Adding to CSV
-df.to_csv("books.csv")
+df.to_csv("html_to_csv/books.csv")
