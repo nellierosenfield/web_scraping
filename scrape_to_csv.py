@@ -1,10 +1,13 @@
 # Web scraping project using bs4 and books.toscrape.com playground
 from bs4 import BeautifulSoup
+import pandas as pd
 import requests
 
+# Container for our list of books
 books = []
-# URl of pages we are scraping with looping
-for page_number in range(1, 51):
+
+for page_number in range(1, 6):
+    # URl of pages we are scraping with looping
     url = f"https://books.toscrape.com/catalogue/page-{page_number}.html"
 
     # GETting page content and storing it into response object
@@ -19,9 +22,6 @@ for page_number in range(1, 51):
     # First we need to grab the main ol that is the container and then all article tags which contain each book
     ol = soup.find('ol')
     articles = ol.find_all('article', class_='product_pod')
-
-    # Container for our list of books
-
 
     # Now we will loop though each article and grab the three things we need
     for article in articles:
@@ -40,3 +40,10 @@ for page_number in range(1, 51):
         # Now we will combine them together
         books.append([title, price, star])
 
+# Now we will work on getting our list of books into a CSV
+
+# Creating dataframe to store list and add columns
+df = pd.DataFrame(books, columns=['Title', 'Price', 'Rating'])
+
+# Adding to CSV
+df.to_csv("books.csv")
