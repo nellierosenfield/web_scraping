@@ -9,12 +9,16 @@ import nltk
 
 # This is a web app version of seo_analyzer_with_pybs4.py
 
+# Initializes the Web App
 def web_app():
     st.title('SEO Analyzer Report')
     url = st.text_input('Enter URL: ')
+    # makes sure no errors appear prior to entering a link
     if len(url) > 1:
         seo_analyzer(url)
-    
+
+
+# Performs the analysis of the webpage
 def seo_analyzer(url):
     response = url_check(url).text
     soup = BeautifulSoup(response, 'html.parser')
@@ -69,6 +73,7 @@ def seo_analyzer(url):
     seo_report(keywords, bi_grams_freq, found, not_found)
 
 
+# Generates and displays SEO report
 def seo_report(keywords, bi_grams_freq, found, not_found):
     st.header(f"Here is your SEO report!")
 
@@ -90,6 +95,8 @@ def seo_report(keywords, bi_grams_freq, found, not_found):
         for warning in not_found:
             st.error(warning)
 
+
+# Finds and returns most common keywords
 def most_common(soup):
     # tokenizing each word in body
     try:
@@ -110,6 +117,8 @@ def most_common(soup):
     except:
         return ['No body tag was found! Please correct this!']
 
+
+# Checks if url is valid prior to performing analysis
 def url_check(url):
     try:
         response = requests.get(url)
@@ -122,4 +131,6 @@ def url_check(url):
         st.error(f"**Error**: Invalid or blocked URL: {url}")
         exit()
 
+
+# Starts the app
 web_app()
