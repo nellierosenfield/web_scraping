@@ -44,3 +44,14 @@ if 'h1' not in heading_tags:
 # Do images have atl tags for accessibility?
 for image in soup.find_all('img', alt = ''):
     not_found.append(f"Warning! This image does not contain an alt: {image}")
+
+print(f"""
+        SEO Analyzer Report
+        URL: {url}
+
+        Found on Site:
+        {found}
+
+        Not Found on Site:
+        {not_found}
+      """)
