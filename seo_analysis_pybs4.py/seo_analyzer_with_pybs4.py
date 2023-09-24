@@ -1,6 +1,10 @@
+from nltk.tokenize import word_tokenize
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
 
 # For this analyzer, we will be checking for the following:
 #     - Are there any warnings?
