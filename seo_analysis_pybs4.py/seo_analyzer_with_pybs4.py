@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
+# nltk.download('stopwords')
+# nltk.download('punkt')
 
 # For this analyzer, we will be checking for the following:
 #     - Are there any warnings?
@@ -13,6 +13,37 @@ nltk.download('punkt')
 #     - Do images have atl tags for accessibility?
 #     - Do the keywords match or relate to the page title?
 
+def seo_report(url, found, not_found, keywords):
+    print(f"""
+            SEO Analyzer Report
+            URL: {url}
+
+            Found on Site:
+            {found}
+
+            Not Found on Site:
+            {not_found}
+
+            Most Common Keywords:
+            {keywords}
+          """)
+
+def most_common_keywords(soup):
+    # tokenizing each word in body
+    words = [token.lower() for token in word_tokenize(soup.find('body').text)]
+
+    # collecting list of english stop words for comparison
+    stop_words = nltk.corpus.stopwords.words('english')
+
+    # Ensures that only non-stopwords are captured and stored
+    words_cleaned = []
+    for word in words:
+        if word not in stop_words and word.isalpha():
+            words_cleaned.append(word)
+
+    # returns the 10 most common words as a list
+    return nltk.FreqDist(words_cleaned).most_common(10)
+
 def seo_analyzer(url):
     response = requests.get(url).text
 
@@ -20,7 +51,6 @@ def seo_analyzer(url):
 
     not_found = [] # What's not found on the site
     found = [] # Items present on the site
-    keywords = [] # if present, keywords for optimizing
 
     # Is there a title and meta description?
     title = soup.find('title').text
@@ -29,11 +59,14 @@ def seo_analyzer(url):
     else:
         not_found.append('Title not found! Please add a title to your site')
 
-    meta_desc = soup.find('meta', attrs = {'name': 'description'})['content']
-    if meta_desc:
-        found.append(f"Meta Description: {meta_desc}")
-    else:
-        not_found.append('Meta description not found! Please add a meta description to your site.')
+    try:
+        meta_desc = soup.find('meta', attrs = {'name': 'description'})['content']
+        if meta_desc:
+            found.append(f"Meta Description: {meta_desc}")
+        else:
+            not_found.append('Meta description not found! Please add a meta description to your site.')
+    except:
+        not_found.append('Meta description tag not found! Please add a meta description tag to your site.')
 
     # Are there are enough header tags, especially h1?
     headings = ['h1', 'h2', 'h3']
@@ -49,18 +82,10 @@ def seo_analyzer(url):
     for image in soup.find_all('img', alt = ''):
         not_found.append(f"Warning! This image does not contain an alt: {image}")
     
-    seo_report(url, found, not_found)
+    # Do the keywords match or relate to the page title?
+    keywords = most_common_keywords(soup)
 
-def seo_report(url, found, not_found):
-    print(f"""
-            SEO Analyzer Report
-            URL: {url}
+    # generates report
+    seo_report(url, found, not_found, keywords)
 
-            Found on Site:
-            {found}
-
-            Not Found on Site:
-            {not_found}
-          """)
-
-seo_analyzer("https://pythonology.eu/what-is-syntax-in-programming-and-linguistics/")
+seo_analyzer("https://www.nellierosenfield.com/resume")
