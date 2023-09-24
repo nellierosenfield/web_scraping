@@ -1,9 +1,7 @@
 from nltk.tokenize import word_tokenize
 from bs4 import BeautifulSoup
-import pandas as pd
 import requests
 import nltk
-import sys
 # nltk.download('stopwords')
 # nltk.download('punkt')
 
