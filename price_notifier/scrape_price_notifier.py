@@ -1,30 +1,40 @@
 from bs4 import BeautifulSoup
 import requests
 import smtplib
+import time
 
-url = "https://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html"
+# Modifiying so scripts runs once a day
 
-contents = requests.get(url).content
+sleep_time = 86400 # number of seconds in a day but can modify at any time
 
-soup = BeautifulSoup(contents, 'html.parser')
-title = soup.find('img').attrs['alt']
-price = float(soup.find('p', class_ = 'price_color').text[1:])
+# infinite loop 
+while True:
+    url = "https://books.toscrape.com/catalogue/sapiens-a-brief-history-of-humankind_996/index.html"
 
-if price < 60:
-    # Creating connection to gmail domain via TLS port 587
-    connection = smtplib.SMTP('smtp.gmail.com', 587)
-    connection.ehlo() # greeting gmail domain
-    connection.starttls() # starting TLS security
+    contents = requests.get(url).content
 
-    # providing log-in
-    connection.login('imatesin6@gmail.com', 'cwlhyvaoyjyhntcc')
+    soup = BeautifulSoup(contents, 'html.parser')
+    title = soup.find('img').attrs['alt']
+    price = float(soup.find('p', class_ = 'price_color').text[1:])
 
-    # sending email
-    connection.sendmail('imatesin6@gmail.com', # from who?
-                        'roseyaidata@gmail.com', # to who?
-                        f'Subject: Price Drop Notifier\n\n'
-                        f'Hello Nellie! \n\nThe price for {title} has dropped to {price}.\n\n'
-                        f'Time to buy it :D!') # Say what?
+    if price < 60:
+        # Creating connection to gmail domain via TLS port 587
+        connection = smtplib.SMTP('smtp.gmail.com', 587)
+        connection.ehlo() # greeting gmail domain
+        connection.starttls() # starting TLS security
+
+        # providing log-in
+        connection.login('imatesin6@gmail.com', 'cwlhyvaoyjyhntcc')
+
+        # sending email
+        connection.sendmail('imatesin6@gmail.com', # from who?
+                            'roseyaidata@gmail.com', # to who?
+                            f'Subject: Price Drop Notifier\n\n'
+                            f'Hello Nellie! \n\nThe price for {title} has dropped to {price}.\n\n'
+                            f'Time to buy it :D!') # Say what?
+
+        # Closing connection
+        connection.quit()
     
-    # Closing connection
-    connection.quit()
+    # ensures program sleeps for a day
+    time.sleep(sleep_time)
